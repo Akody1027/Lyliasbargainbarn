@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Customer Portal App Shell</title>
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="manifest.webmanifest" />
+
+  <style>
+    html, body {
+      margin: 0; padding: 0; height: 100%;
+      font-family: system-ui, sans-serif;
+      background: #fafafa;
+      overflow: hidden;
+    }
+    #app-frame {
+      border: none;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+    #install-button {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.2rem;
+      font-size: 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgb(37 99 235 / 0.4);
+      z-index: 1000;
+      display: none;
+      user-select: none;
+    }
+    #install-button:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <iframe id="app-frame" src="portal.html" title="Customer Portal"></iframe>
+
+  <button id="install-button">Download this app</button>
+
+  <script>
+    let deferredPrompt;
+    const installBtn = document.getElementById('install-button');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'block';
+    });
+
+    installBtn.addEventListener('click', async () => {
+      installBtn.style.display = 'none';
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        if (outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        } else {
+          console.log('User dismissed the install prompt');
+        }
+      }
+    });
+
+    // Service Worker registration for offline caching
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('Service Worker registered:', reg.scope))
+          .catch(err => console.error('Service Worker registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>
