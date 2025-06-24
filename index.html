@@ -61,23 +61,35 @@
     let deferredPrompt;
     const installTextPrompt = document.getElementById('install-text-prompt');
 
+    // Check if app is installed (standalone mode)
     const isInstalled = window.matchMedia('(display-mode: standalone)').matches
       || window.navigator.standalone === true;
 
+    console.log('isInstalled:', isInstalled);
+
+    // Show prompt text immediately if NOT installed
     if (!isInstalled) {
+      console.log('Showing install prompt text');
       installTextPrompt.style.display = 'block';
+    } else {
+      console.log('App is installed; not showing install prompt');
     }
 
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
+      console.log('beforeinstallprompt event fired');
+      // Show prompt text if not installed and not already visible
       if (!isInstalled && installTextPrompt.style.display !== 'block') {
         installTextPrompt.style.display = 'block';
       }
     });
 
     installTextPrompt.addEventListener('click', async () => {
-      if (!deferredPrompt) return;
+      if (!deferredPrompt) {
+        console.log('No deferredPrompt available');
+        return;
+      }
 
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
@@ -92,6 +104,7 @@
       }
     });
 
+    // Service Worker registration for offline caching
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
