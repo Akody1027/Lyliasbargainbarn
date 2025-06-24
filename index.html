@@ -13,16 +13,13 @@
       margin: 0; padding: 0; height: 100%;
       font-family: system-ui, sans-serif;
       background: #fafafa;
-      /* Removed overflow:hidden to avoid clipping fixed prompt */
-      /* overflow: hidden; */
     }
 
-    /* Wrapper to stack iframe and prompt */
     #app-wrapper {
       position: relative;
       height: 100vh;
       width: 100vw;
-      overflow: hidden; /* keep iframe scroll inside wrapper */
+      overflow: hidden;
     }
 
     #app-frame {
@@ -31,7 +28,7 @@
       height: 100%;
       display: block;
       position: relative;
-      z-index: 1; /* below prompt */
+      z-index: 1;
     }
 
     /* Hide original blue install button */
@@ -52,9 +49,9 @@
       cursor: pointer;
       user-select: none;
       animation: fadeOpacity 2s infinite alternate;
-      z-index: 9999; /* highest */
-      display: none;
-      background: rgba(255, 255, 255, 0.8); /* subtle background for readability */
+      z-index: 9999;
+      display: block; /* ALWAYS visible */
+      background: rgba(255, 255, 255, 0.8);
       padding: 0.2rem 0;
       box-sizing: border-box;
       pointer-events: auto;
@@ -79,30 +76,14 @@
     let deferredPrompt;
     const installTextPrompt = document.getElementById('install-text-prompt');
 
-    // Robust check for installed app
-    function isAppInstalled() {
-      return window.matchMedia('(display-mode: standalone)').matches
-        || Boolean(window.navigator.standalone);
-    }
-
-    const installed = isAppInstalled();
-    console.log('App installed:', installed);
-
-    // Show prompt text immediately if NOT installed
-    if (!installed) {
-      console.log('Showing install prompt text');
-      installTextPrompt.style.display = 'block';
-    } else {
-      console.log('App is installed; not showing install prompt');
-    }
+    // Show prompt ALWAYS, no installed check needed
+    // (already display:block in CSS)
 
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
       console.log('beforeinstallprompt event fired');
-      if (!installed && installTextPrompt.style.display !== 'block') {
-        installTextPrompt.style.display = 'block';
-      }
+      // The prompt text is already visible, no need to show it again
     });
 
     installTextPrompt.addEventListener('click', async () => {
@@ -115,6 +96,7 @@
       const { outcome } = await deferredPrompt.userChoice;
       deferredPrompt = null;
 
+      // Hide the prompt after user responds
       installTextPrompt.style.display = 'none';
 
       if (outcome === 'accepted') {
