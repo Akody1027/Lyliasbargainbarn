@@ -21,53 +21,66 @@
       height: 100vh;
       display: block;
     }
+
+    /* Hide original blue install button */
     #install-button {
+      display: none !important;
+    }
+
+    /* New animated install prompt text */
+    #install-text-prompt {
       position: fixed;
       bottom: 1rem;
-      right: 1rem;
-      background: #2563eb;
-      color: white;
-      border: none;
-      padding: 0.8rem 1.2rem;
+      width: 100%;
+      text-align: center;
+      color: red;
+      font-weight: bold;
       font-size: 1rem;
-      border-radius: 0.5rem;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgb(37 99 235 / 0.4);
-      z-index: 1000;
-      display: none;
       user-select: none;
+      animation: fadeOpacity 2s infinite alternate;
+      z-index: 1000;
     }
-    #install-button:hover {
-      background: #1d4ed8;
+
+    @keyframes fadeOpacity {
+      from { opacity: 1; }
+      to { opacity: 0.7; }
     }
   </style>
 </head>
 <body>
   <iframe id="app-frame" src="portal.html" title="Customer Portal"></iframe>
 
-  <button id="install-button">Download this app</button>
+  <!-- Removed install button, replaced by text prompt below -->
+  <div id="install-text-prompt" style="display:none;">
+    FOR BEST FUNCTIONALITY CLICK HERE TO INSTALL MOBILE APP
+  </div>
 
   <script>
     let deferredPrompt;
-    const installBtn = document.getElementById('install-button');
+    const installTextPrompt = document.getElementById('install-text-prompt');
 
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      installBtn.style.display = 'block';
+      // Show the text prompt when beforeinstallprompt event fires
+      installTextPrompt.style.display = 'block';
     });
 
-    installBtn.addEventListener('click', async () => {
-      installBtn.style.display = 'none';
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        deferredPrompt = null;
-        if (outcome === 'accepted') {
-          console.log('User accepted the install prompt');
-        } else {
-          console.log('User dismissed the install prompt');
-        }
+    installTextPrompt.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+
+      // Remove the prompt text after user choice
+      installTextPrompt.style.display = 'none';
+
+      if (outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+      } else {
+        console.log('User dismissed the install prompt');
       }
     });
 
