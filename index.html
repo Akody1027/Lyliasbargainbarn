@@ -27,10 +27,11 @@
       display: none !important;
     }
 
-    /* New animated install prompt text */
+    /* Fixed top install prompt text */
     #install-text-prompt {
       position: fixed;
-      bottom: 1rem;
+      top: 1rem;
+      left: 0;
       width: 100%;
       text-align: center;
       color: red;
@@ -40,7 +41,7 @@
       user-select: none;
       animation: fadeOpacity 2s infinite alternate;
       z-index: 1000;
-      display: none; /* initially hidden */
+      display: none;
     }
 
     @keyframes fadeOpacity {
@@ -52,7 +53,6 @@
 <body>
   <iframe id="app-frame" src="portal.html" title="Customer Portal"></iframe>
 
-  <!-- Install prompt text -->
   <div id="install-text-prompt">
     FOR BEST FUNCTIONALITY CLICK HERE TO INSTALL MOBILE APP
   </div>
@@ -61,11 +61,9 @@
     let deferredPrompt;
     const installTextPrompt = document.getElementById('install-text-prompt');
 
-    // Detect if app is installed (standalone mode)
     const isInstalled = window.matchMedia('(display-mode: standalone)').matches
       || window.navigator.standalone === true;
 
-    // Show prompt text only if NOT installed
     if (!isInstalled) {
       installTextPrompt.style.display = 'block';
     }
@@ -73,7 +71,6 @@
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      // Make sure prompt text is visible if not installed (already done on load)
       if (!isInstalled && installTextPrompt.style.display !== 'block') {
         installTextPrompt.style.display = 'block';
       }
@@ -86,7 +83,6 @@
       const { outcome } = await deferredPrompt.userChoice;
       deferredPrompt = null;
 
-      // Hide the prompt text after user responds
       installTextPrompt.style.display = 'none';
 
       if (outcome === 'accepted') {
@@ -96,7 +92,6 @@
       }
     });
 
-    // Service Worker registration for offline caching
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
