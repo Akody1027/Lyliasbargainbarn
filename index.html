@@ -4,115 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Customer Portal</title>
-
-  <!-- Web App Manifest -->
-  <link rel="manifest" href="manifest.webmanifest" />
-
   <style>
     html, body {
-      margin: 0; padding: 0; height: 100%;
-      font-family: system-ui, sans-serif;
-      background: #fafafa;
-    }
-
-    #app-wrapper {
-      position: relative;
-      height: 90vh;
-      width: 100vw;
+      margin: 0;
+      padding: 0;
+      height: 100%;
       overflow: hidden;
     }
-
-    #app-frame {
+    iframe {
       border: none;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       display: block;
-      position: relative;
-      z-index: 99998;
-    }
-
-    /* Hide original blue install button */
-    #install-button {
-      display: none !important;
-    }
-
-    /* Fixed top install prompt text */
-    #install-text-prompt {
-      position: fixed;
-      top: 10rem;
-      left: 0;
-      width: 100%;
-      text-align: center;
-      color: red;
-      font-weight: bold;
-      font-size: 1rem;
-      cursor: pointer;
-      user-select: none;
-      animation: fadeOpacity 2s infinite alternate;
-      z-index: 99999 !important;
-      display: block; /* ALWAYS visible */
-      background: rgba(255, 255, 255, 0.8);
-      padding: 0.2rem 0;
-      box-sizing: border-box;
-      pointer-events: auto;
-    }
-
-    @keyframes fadeOpacity {
-      from { opacity: 1; }
-      to { opacity: 0.7; }
     }
   </style>
 </head>
 <body>
-  <div id="app-wrapper">
-    <iframe id="app-frame" src="portal.html" title="Customer Portal"></iframe>
-
-    <div id="install-text-prompt">
-      FOR BEST FUNCTIONALITY CLICK HERE TO INSTALL MOBILE APP
-    </div>
-  </div>
-
-  <script>
-    let deferredPrompt;
-    const installTextPrompt = document.getElementById('install-text-prompt');
-
-    // Show prompt ALWAYS, no installed check needed
-    // (already display:block in CSS)
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      console.log('beforeinstallprompt event fired');
-      // The prompt text is already visible, no need to show it again
-    });
-
-    installTextPrompt.addEventListener('click', async () => {
-      if (!deferredPrompt) {
-        console.log('No deferredPrompt available');
-        return;
-      }
-
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      deferredPrompt = null;
-
-      // Hide the prompt after user responds
-      installTextPrompt.style.display = 'none';
-
-      if (outcome === 'accepted') {
-        console.log('User accepted the install prompt');
-      } else {
-        console.log('User dismissed the install prompt');
-      }
-    });
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-          .then(reg => console.log('Service Worker registered:', reg.scope))
-          .catch(err => console.error('Service Worker registration failed:', err));
-      });
-    }
-  </script>
+  <iframe src="portal.html" title="Customer Portal"></iframe>
 </body>
 </html>
