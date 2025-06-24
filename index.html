@@ -40,6 +40,7 @@
       user-select: none;
       animation: fadeOpacity 2s infinite alternate;
       z-index: 1000;
+      display: none; /* initially hidden */
     }
 
     @keyframes fadeOpacity {
@@ -51,8 +52,8 @@
 <body>
   <iframe id="app-frame" src="portal.html" title="Customer Portal"></iframe>
 
-  <!-- Removed install button, replaced by text prompt below -->
-  <div id="install-text-prompt" style="display:none;">
+  <!-- Install prompt text -->
+  <div id="install-text-prompt">
     FOR BEST FUNCTIONALITY CLICK HERE TO INSTALL MOBILE APP
   </div>
 
@@ -60,11 +61,22 @@
     let deferredPrompt;
     const installTextPrompt = document.getElementById('install-text-prompt');
 
+    // Detect if app is installed (standalone mode)
+    const isInstalled = window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+
+    // Show prompt text only if NOT installed
+    if (!isInstalled) {
+      installTextPrompt.style.display = 'block';
+    }
+
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      // Show the text prompt when beforeinstallprompt event fires
-      installTextPrompt.style.display = 'block';
+      // Make sure prompt text is visible if not installed (already done on load)
+      if (!isInstalled && installTextPrompt.style.display !== 'block') {
+        installTextPrompt.style.display = 'block';
+      }
     });
 
     installTextPrompt.addEventListener('click', async () => {
@@ -74,7 +86,7 @@
       const { outcome } = await deferredPrompt.userChoice;
       deferredPrompt = null;
 
-      // Remove the prompt text after user choice
+      // Hide the prompt text after user responds
       installTextPrompt.style.display = 'none';
 
       if (outcome === 'accepted') {
