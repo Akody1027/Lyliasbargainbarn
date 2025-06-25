@@ -861,7 +861,7 @@ Admin</textarea>
           const subject = encodeURIComponent("Welcome to Customer Portal");
           const body = encodeURIComponent(`Hello ${c.name},
 
-Please create your login PIN at the customer portal using this link: [INSERT_PORTAL_LINK]
+Please create your login PIN at the customer portal using this link: [www.lyliasbargainbarn.com]
 
 Thank you!`);
           return `mailto:${c.email}?subject=${subject}&body=${body}`;
@@ -895,7 +895,7 @@ Thank you!`);
       // Login flow
       loginBtn.onclick = async () => {
         pinError.textContent = "";
-        if (pinInput.value === "1234") {
+        if (pinInput.value === "6323") {
           loginBtnText.classList.add("hidden");
           loginBtnSpinner.classList.remove("hidden");
           loginBtn.disabled = true;
