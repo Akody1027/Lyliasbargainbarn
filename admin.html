@@ -861,7 +861,7 @@ Admin</textarea>
           const subject = encodeURIComponent("Welcome to Customer Portal");
           const body = encodeURIComponent(`Hello ${c.name},
 
-Please create your login PIN at the customer portal using this link: [www.lyliasbargainbarn.com]
+Please create your login PIN at the customer portal using this link: https://www.lyliasbargainbarn.com
 
 Thank you!`);
           return `mailto:${c.email}?subject=${subject}&body=${body}`;
