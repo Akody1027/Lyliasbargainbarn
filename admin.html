@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+  <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -13,6 +14,24 @@
   <!-- PayPal SDK -->
   <script src="https://www.paypal.com/sdk/js?client-id=AXFMhUc3S_3ohWhmBYldq&currency=USD"></script>
   <style>
+
+/* Adjust zoom selector styling if needed */
+#zoom-select {
+  cursor: pointer;
+  user-select: none;
+}
+html {
+  /* Ensure transform origin is top-left for zoom */
+  transform-origin: top left;
+  transition: transform 0.2s ease;
+}
+
+
+
+
+
+
+
 #sidebar {
   width: 35vw;
   max-width: 35vw;
@@ -343,6 +362,27 @@ Admin</textarea>
     <header class="bg-white shadow-md">
       <div class="px-4 py-3">
         <h2 id="page-title" class="text-xl font-semibold">Dashboard</h2>
+
+
+<div class="ml-4 inline-block">
+  <label for="zoom-select" class="text-gray-600 font-semibold mr-2">Zoom:</label>
+  <select id="zoom-select" class="border rounded px-2 py-1 text-sm">
+    <option value="0.8">80%</option>
+    <option value="0.9">90%</option>
+    <option value="1" selected>100%</option>
+    <option value="1.1">110%</option>
+    <option value="1.2">120%</option>
+    <option value="1.3">130%</option>
+    <option value="1.4">140%</option>
+    <option value="1.5">150%</option>
+  </select>
+</div>
+
+
+
+
+
+
       </div>
     </header>
     <main class="mx-auto flex-1 max-w-4xl overflow-auto p-6 space-y-6 w-full">
@@ -430,6 +470,23 @@ Admin</textarea>
   </div>
 
   <script>
+const zoomSelect = document.getElementById("zoom-select");
+const htmlElement = document.documentElement;
+
+zoomSelect.addEventListener("change", () => {
+  const zoom = parseFloat(zoomSelect.value);
+  htmlElement.style.transform = `scale(${zoom})`;
+
+  // Adjust width and height so the page fits the viewport without scrollbars when zoomed
+  htmlElement.style.width = `${100 / zoom}%`;
+  htmlElement.style.height = `${100 / zoom}%`;
+});
+
+
+
+
+
+
     document.addEventListener("DOMContentLoaded", async function () {
       const firebaseConfig = {
         apiKey: "AIzaSyB2lKzEGU4YWV9-E9XILI3Gy0v80F2hJFc",
