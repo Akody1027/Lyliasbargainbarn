@@ -854,40 +854,58 @@ Admin</textarea>
         hideEmailOptionsDropdown();
       };
 
-      async function sendNewCustomerEmail() {
-        const customers = await getCustomers();
-        const toSend = customers.filter((c) => selectedCustomerIds.has(c.id));
-        const mailtoLinks = toSend.map(c => {
-          const subject = encodeURIComponent("Welcome to Customer Portal");
-          const body = encodeURIComponent(`Hello ${c.name},
+
+async function sendNewCustomerEmail() {
+  const customers = await getCustomers();
+  const toSend = customers.filter((c) => selectedCustomerIds.has(c.id) && c.email);
+  if (toSend.length === 0) {
+    alert("No selected customers with valid email addresses.");
+    return;
+  }
+
+  const emails = toSend.map(c => c.email).join(",");
+  const subject = encodeURIComponent("Welcome to Customer Portal");
+  const body = encodeURIComponent(`Hello,
 
 Please create your login PIN at the customer portal using this link: https://www.lyliasbargainbarn.com
 
 Thank you!`);
-          return `mailto:${c.email}?subject=${subject}&body=${body}`;
-        });
-        for (const mailto of mailtoLinks) {
-          window.open(mailto);
-        }
-        hideEmailOptionsDropdown();
-      }
-      async function sendNewInvoiceEmail() {
-        const customers = await getCustomers();
-        const toSend = customers.filter((c) => selectedCustomerIds.has(c.id));
-        const mailtoLinks = toSend.map(c => {
-          const subject = encodeURIComponent("Your Invoice is Ready");
-          const body = encodeURIComponent(`Hello ${c.name},
+  const mailto = `mailto:${emails}?subject=${subject}&body=${body}`;
+  window.open(mailto);
+  hideEmailOptionsDropdown();
+}
+
+
+
+
+async function sendNewInvoiceEmail() {
+  const customers = await getCustomers();
+  const toSend = customers.filter((c) => selectedCustomerIds.has(c.id) && c.email);
+  if (toSend.length === 0) {
+    alert("No selected customers with valid email addresses.");
+    return;
+  }
+
+  const emails = toSend.map(c => c.email).join(",");
+  const subject = encodeURIComponent("Your Invoice is Ready");
+  const body = encodeURIComponent(`Hello,
 
 Your new invoice is available to view. Please log in to your customer portal.
 
 Thank you!`);
-          return `mailto:${c.email}?subject=${subject}&body=${body}`;
-        });
-        for (const mailto of mailtoLinks) {
-          window.open(mailto);
-        }
-        hideEmailOptionsDropdown();
-      }
+  const mailto = `mailto:${emails}?subject=${subject}&body=${body}`;
+  window.open(mailto);
+  hideEmailOptionsDropdown();
+}
+
+
+
+
+
+
+
+
+
 
       emailNewCustomerBtn.onclick = () => sendNewCustomerEmail();
       emailNewInvoiceBtn.onclick = () => sendNewInvoiceEmail();
@@ -1026,3 +1044,4 @@ Thank you!`);
   </script>
 </body>
 </html>
+  
